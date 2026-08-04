@@ -155,17 +155,40 @@ public sealed class WorkSessionService
     }
 
     /// <summary>
+    /// 表示名の解決表を返す（docs/07-api-design.md §2.13 / §2.18）。
+    /// </summary>
+    /// <remarks>
+    /// アーカイブ済みタスク・無効な作業タイプも含める。過去のセッションは
+    /// それらを参照し続けるため。
+    /// </remarks>
+    public async Task<WorkSessionLabels> GetLabelsAsync(CancellationToken cancellationToken)
+    {
+        var taskItems = await _taskItems.GetAsync(
+            includeArchived: true, keyword: null, cancellationToken);
+        var workTypes = await _workTypes.GetAllAsync(
+            includeInactive: true, cancellationToken);
+
+        return new WorkSessionLabels(
+            taskItems.ToDictionary(x => x.Id, x => x.Title),
+            workTypes.ToDictionary(x => x.Id, x => x.Name));
+    }
+
+    /// <summary>
     /// 履歴を JST の日付単位でまとめて返す。日付・セッションとも新しい順。
     /// </summary>
-    /// <param name="fromJst">開始日（この日を含む・JST 基準）。</param>
-    /// <param name="toJst">終了日（この日を含む・JST 基準）。</param>
+    /// <param name="fromJst">開始日（この日を含む・JST 基準）。省略時は 27 日前。</param>
+    /// <param name="toJst">終了日（この日を含む・JST 基準）。省略時は当日。</param>
     public async Task<IReadOnlyList<WorkSessionDay>> GetHistoryAsync(
-        DateOnly fromJst,
-        DateOnly toJst,
+        DateOnly? from,
+        DateOnly? to,
         SessionStatus? status,
         long? taskItemId,
         CancellationToken cancellationToken)
     {
+        // 既定は直近 28 日（本日を含む）（docs/04-analytics-spec.md §2.2）。
+        var toJst = to ?? _clock.TodayJst;
+        var fromJst = from ?? toJst.AddDays(-27);
+
         if (fromJst > toJst)
         {
             throw new DomainRuleException(
