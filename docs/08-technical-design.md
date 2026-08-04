@@ -39,7 +39,7 @@ MVPの目的は観測と分析の成立であり、アーキテクチャの完�
 | DBドライバ | Npgsql.EntityFrameworkCore.PostgreSQL | |
 | バリデーション | DataAnnotations（DTO）+ ドメイン層のガード | FluentValidationは導入しない |
 | APIドキュメント | OpenAPI（`Microsoft.AspNetCore.OpenApi`）+ Scalar | 開発時のみ |
-| テスト | xUnit + FluentAssertions + Testcontainers | |
+| テスト | xUnit + Testcontainers | アサーションは標準の `Assert`。FluentAssertions は 8.x 以降が商用ライセンスのため採用しない |
 
 ### 1.2 フロントエンド
 
