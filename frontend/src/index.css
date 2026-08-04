@@ -67,3 +67,18 @@ button:disabled {
 [role="alert"] {
   color: var(--color-danger);
 }
+
+/* 視覚的には隠すが支援技術には残す。ネイティブの radio / checkbox を
+   ボタン風に見せる際に使う。要素自体を display:none にすると
+   キーボード操作とスクリーンリーダーから外れてしまう。 */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
