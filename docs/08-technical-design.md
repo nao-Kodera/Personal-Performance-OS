@@ -69,7 +69,7 @@ MVPの目的は観測と分析の成立であり、アーキテクチャの完�
 |---|---|
 | DB | PostgreSQL 16（Docker） |
 | 起動 | Docker Compose |
-| Node | 22.x LTS |
+| Node | 24.x LTS |
 
 ---
 
