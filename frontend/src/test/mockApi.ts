@@ -50,6 +50,12 @@ export function get(pathFragment: string, body: unknown): Handler {
     method === 'GET' && url.includes(pathFragment) ? { status: 200, body } : undefined;
 }
 
+/** 本文のない 200 系。進行中セッションが無い場合の 204 など。 */
+export function getNoContent(pathFragment: string): Handler {
+  return ({ method, url }) =>
+    method === 'GET' && url.includes(pathFragment) ? { status: 204 } : undefined;
+}
+
 export function post(pathFragment: string, status: number, body?: unknown): Handler {
   return ({ method, url }) =>
     method === 'POST' && url.includes(pathFragment) ? { status, body } : undefined;

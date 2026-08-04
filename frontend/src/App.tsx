@@ -3,6 +3,7 @@ import { BrowserRouter, Route, Routes } from 'react-router';
 
 import { createQueryClient } from './api/queryClient';
 import { FoundationPage } from './pages/FoundationPage';
+import { StartSessionPage } from './pages/StartSessionPage';
 import { TasksPage } from './pages/TasksPage';
 
 const queryClient = createQueryClient();
@@ -20,6 +21,13 @@ export default function App() {
           <Route path="/" element={<FoundationPage />} />
           {/* S-02 */}
           <Route path="/tasks" element={<TasksPage />} />
+          {/* S-04 */}
+          <Route path="/sessions/start" element={<StartSessionPage />} />
+          {/* S-05 は T-16 で実装する。それまでは開始後の遷移先を空白にしないための仮表示。 */}
+          <Route
+            path="/sessions/active"
+            element={<p>作業中の画面は未実装です（T-16）。</p>}
+          />
         </Routes>
       </BrowserRouter>
     </QueryClientProvider>
