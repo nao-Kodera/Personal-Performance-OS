@@ -1,0 +1,11 @@
+# 改行コードを LF に統一する。
+#
+# Git for Windows は system の gitconfig で core.autocrlf=true を設定しており、
+# 何も指定しないとチェックアウト時に作業ツリーが CRLF になる。これは
+# .editorconfig の end_of_line = lf と食い違い、Linux コンテナへ COPY した
+# ファイル（特にシェルスクリプト）で問題を起こす。
+#
+# eol=lf は core.autocrlf より優先されるため、この 1 行で挙動が確定する。
+# 開発者ごとの git config に依存しない。
+
+* text=auto eol=lf
