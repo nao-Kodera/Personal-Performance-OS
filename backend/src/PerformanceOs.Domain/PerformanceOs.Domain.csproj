@@ -1,0 +1,9 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    Domain は何にも依存しない。
+    ProjectReference も PackageReference も追加しないこと。
+    設計書: docs/08-technical-design.md §2.1
+  -->
+
+</Project>

@@ -1,0 +1,8 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <ProjectReference Include="..\PerformanceOs.Domain\PerformanceOs.Domain.csproj" />
+    <ProjectReference Include="..\PerformanceOs.Application\PerformanceOs.Application.csproj" />
+  </ItemGroup>
+
+</Project>
