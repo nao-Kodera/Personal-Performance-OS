@@ -37,6 +37,28 @@ public static class JstCalendar
         => DateOnly.FromDateTime(ToJst(instant).DateTime);
 
     /// <summary>
+    /// JST 基準の日付の 00:00 に相当する UTC の瞬間を返す。
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// JST の日付範囲で検索する際に使う。<c>AT TIME ZONE</c> を含む式で
+    /// 絞り込むとインデックス <c>ix_work_sessions_started_at</c> が使えないため、
+    /// 日付を UTC の瞬間に変換してから範囲比較する。
+    /// </para>
+    /// <para>
+    /// 終端は「翌日の 00:00 未満」で表す。<c>&lt;=</c> で当日の 23:59:59 を
+    /// 指定すると、それより後のミリ秒が漏れる。
+    /// </para>
+    /// </remarks>
+    public static DateTimeOffset StartOfDayUtc(DateOnly jstDate)
+    {
+        var startOfDayJst = jstDate.ToDateTime(TimeOnly.MinValue);
+        var offset = Jst.GetUtcOffset(startOfDayJst);
+
+        return new DateTimeOffset(startOfDayJst, offset).ToUniversalTime();
+    }
+
+    /// <summary>
     /// 指定時刻が属する時間帯区分を返す（docs/02-glossary.md §3.2）。
     /// </summary>
     public static TimeBand ToTimeBand(DateTimeOffset instant)
