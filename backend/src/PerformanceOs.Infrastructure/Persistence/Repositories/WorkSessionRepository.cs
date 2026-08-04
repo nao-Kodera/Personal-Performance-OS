@@ -32,9 +32,11 @@ public sealed class WorkSessionRepository : IWorkSessionRepository
         var query = WithAggregate()
             .Where(x => x.StartedAt >= fromUtc && x.StartedAt < toExclusiveUtc);
 
-        if (status is not null)
+        // nullable のまま比較すると、値変換された列との突き合わせで
+        // 翻訳に失敗しうる。非 nullable の局所変数にしてから比較する。
+        if (status is { } sessionStatus)
         {
-            query = query.Where(x => x.Status == status);
+            query = query.Where(x => x.Status == sessionStatus);
         }
 
         return await query
