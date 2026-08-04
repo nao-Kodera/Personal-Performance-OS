@@ -1,8 +1,10 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using PerformanceOs.Application.TaskItems;
 using PerformanceOs.Domain.Repositories;
 using PerformanceOs.Domain.Time;
 using PerformanceOs.Infrastructure.Persistence;
+using PerformanceOs.Infrastructure.Persistence.Queries;
 using PerformanceOs.Infrastructure.Persistence.Repositories;
 using PerformanceOs.Infrastructure.Time;
 
@@ -27,6 +29,9 @@ public static class DependencyInjection
         services.AddScoped<IWorkTypeRepository, WorkTypeRepository>();
         services.AddScoped<ITaskItemRepository, TaskItemRepository>();
         services.AddScoped<IWorkSessionRepository, WorkSessionRepository>();
+
+        // 読み取りモデル。集約を経由しない射影の実装。
+        services.AddScoped<ITaskItemQuery, TaskItemQuery>();
 
         return services;
     }
