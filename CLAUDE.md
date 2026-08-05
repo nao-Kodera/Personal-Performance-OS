@@ -178,8 +178,10 @@ docker compose up -d db
 
 ```bash
 dotnet ef database update --project backend/src/PerformanceOs.Infrastructure \
-                          --startup-project backend/src/PerformanceOs.Api
+                          --startup-project backend/src/PerformanceOs.Infrastructure
 ```
+
+`Microsoft.EntityFrameworkCore.Design` は Infrastructure 側にあるため、startup も Infrastructure を指す。Api を startup にすると "doesn't reference Microsoft.EntityFrameworkCore.Design" で失敗する。設計時の DbContext は `PerformanceOsDbContextFactory` が組み立てる。
 
 **副作用のあるコマンド**（`docker compose down -v`・`database drop`・実データを含む DB への操作）を確認なしに実行しない。
 
