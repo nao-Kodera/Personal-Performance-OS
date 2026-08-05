@@ -3,6 +3,7 @@ import { BrowserRouter, Route, Routes } from 'react-router';
 
 import { createQueryClient } from './api/queryClient';
 import { ActiveSessionPage } from './pages/ActiveSessionPage';
+import { FinishSessionPage } from './pages/FinishSessionPage';
 import { FoundationPage } from './pages/FoundationPage';
 import { StartSessionPage } from './pages/StartSessionPage';
 import { TasksPage } from './pages/TasksPage';
@@ -26,11 +27,8 @@ export default function App() {
           <Route path="/sessions/start" element={<StartSessionPage />} />
           {/* S-05 */}
           <Route path="/sessions/active" element={<ActiveSessionPage />} />
-          {/* S-06 は T-17 で実装する。それまでは終了後の遷移先を空白にしないための仮表示。 */}
-          <Route
-            path="/sessions/:id/finish"
-            element={<p>成果評価の画面は未実装です（T-17）。</p>}
-          />
+          {/* S-06 */}
+          <Route path="/sessions/:id/finish" element={<FinishSessionPage />} />
         </Routes>
       </BrowserRouter>
     </QueryClientProvider>

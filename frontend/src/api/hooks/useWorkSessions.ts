@@ -4,6 +4,7 @@ import { apiClient } from '../client';
 import { queryKeys } from '../queryClient';
 import type {
   AbandonWorkSessionRequest,
+  SaveResultRequest,
   StartWorkSessionRequest,
   WorkSessionResponse,
 } from '../types';
@@ -50,6 +51,31 @@ export function useStartWorkSession() {
       queryClient.setQueryData(queryKeys.activeSession(), session);
 
       // タスク一覧の最終利用時刻とセッション数が変わる。
+      void queryClient.invalidateQueries({ queryKey: ['tasks'] });
+    },
+  });
+}
+
+/**
+ * 作業を終了し、成果を記録する（UC-05）。
+ *
+ * <b>終了と評価は分離できない。</b>分けると「終了したが評価していない」状態が
+ * 生じ、Completed なら PerformanceResult が必ず存在するという不変条件が破れる
+ * （WS-3）。<b>スキップ導線を作らないこと</b>（技術設計 §8 の禁止事項 4）。
+ *
+ * finishedAt はサーバーが決める。リクエストに含めない。
+ */
+export function useFinishSession() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ id, ...request }: SaveResultRequest & { id: number }) =>
+      apiClient.post<WorkSessionResponse>(`/api/work-sessions/${id}/finish`, request),
+    onSuccess: () => {
+      queryClient.setQueryData(queryKeys.activeSession(), null);
+
+      void queryClient.invalidateQueries({ queryKey: ['work-sessions'] });
+      // タスク一覧のセッション数が変わる。
       void queryClient.invalidateQueries({ queryKey: ['tasks'] });
     },
   });
