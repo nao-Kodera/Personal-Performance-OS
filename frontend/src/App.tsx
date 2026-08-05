@@ -2,6 +2,7 @@ import { QueryClientProvider } from '@tanstack/react-query';
 import { BrowserRouter, Route, Routes } from 'react-router';
 
 import { createQueryClient } from './api/queryClient';
+import { ActiveSessionPage } from './pages/ActiveSessionPage';
 import { FoundationPage } from './pages/FoundationPage';
 import { StartSessionPage } from './pages/StartSessionPage';
 import { TasksPage } from './pages/TasksPage';
@@ -23,10 +24,12 @@ export default function App() {
           <Route path="/tasks" element={<TasksPage />} />
           {/* S-04 */}
           <Route path="/sessions/start" element={<StartSessionPage />} />
-          {/* S-05 は T-16 で実装する。それまでは開始後の遷移先を空白にしないための仮表示。 */}
+          {/* S-05 */}
+          <Route path="/sessions/active" element={<ActiveSessionPage />} />
+          {/* S-06 は T-17 で実装する。それまでは終了後の遷移先を空白にしないための仮表示。 */}
           <Route
-            path="/sessions/active"
-            element={<p>作業中の画面は未実装です（T-16）。</p>}
+            path="/sessions/:id/finish"
+            element={<p>成果評価の画面は未実装です（T-17）。</p>}
           />
         </Routes>
       </BrowserRouter>

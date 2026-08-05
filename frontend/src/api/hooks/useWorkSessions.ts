@@ -2,7 +2,11 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import { apiClient } from '../client';
 import { queryKeys } from '../queryClient';
-import type { StartWorkSessionRequest, WorkSessionResponse } from '../types';
+import type {
+  AbandonWorkSessionRequest,
+  StartWorkSessionRequest,
+  WorkSessionResponse,
+} from '../types';
 
 /**
  * 進行中のセッション。存在しなければ null。
@@ -47,6 +51,28 @@ export function useStartWorkSession() {
 
       // タスク一覧の最終利用時刻とセッション数が変わる。
       void queryClient.invalidateQueries({ queryKey: ['tasks'] });
+    },
+  });
+}
+
+/**
+ * 作業として成立しなかったセッションを終了する（UC-06）。
+ *
+ * 成果は記録されない（WS-4）。Abandoned は分析の母集団から除外されるが、
+ * 履歴には残る。<b>削除ではない。</b>「開始したが作業にならなかった」という
+ * 事実自体が情報である（docs/01-product-requirements.md §8 原則2）。
+ */
+export function useAbandonSession() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ id, note }: AbandonWorkSessionRequest & { id: number }) =>
+      apiClient.post<WorkSessionResponse>(`/api/work-sessions/${id}/abandon`, { note }),
+    onSuccess: () => {
+      queryClient.setQueryData(queryKeys.activeSession(), null);
+
+      // 履歴に中断終了として現れる。
+      void queryClient.invalidateQueries({ queryKey: ['work-sessions'] });
     },
   });
 }

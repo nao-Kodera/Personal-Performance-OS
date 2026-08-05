@@ -9,5 +9,10 @@ import { useLocation } from 'react-router';
 export function LocationProbe() {
   const location = useLocation();
 
-  return <span data-testid="location">{location.pathname}</span>;
+  return (
+    <>
+      <span data-testid="location">{location.pathname}</span>
+      <span data-testid="location-state">{JSON.stringify(location.state)}</span>
+    </>
+  );
 }
