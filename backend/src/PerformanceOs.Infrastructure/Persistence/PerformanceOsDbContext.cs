@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using PerformanceOs.Domain.DailyConditions;
 using PerformanceOs.Domain.TaskItems;
 using PerformanceOs.Domain.ValueObjects;
 using PerformanceOs.Domain.WorkSessions;
@@ -23,6 +24,12 @@ public sealed class PerformanceOsDbContext : DbContext
     /// PerformanceResult はナビゲーション経由で扱う。
     /// </summary>
     public DbSet<WorkSession> WorkSessions => Set<WorkSession>();
+
+    /// <summary>
+    /// 日次コンディション。WorkSession とは FK を持たず、JST の日付で
+    /// 暗黙に結合する（docs/06-database-design.md §1）。
+    /// </summary>
+    public DbSet<DailyCondition> DailyConditions => Set<DailyCondition>();
 
     protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
     {
