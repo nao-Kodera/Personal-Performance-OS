@@ -2,7 +2,7 @@
 
 - ドキュメントID: TASKS-009
 - ステータス: ドラフト
-- 最終更新: 2026-08-04
+- 最終更新: 2026-08-05
 - 前提: 設計書01〜08すべて
 
 ---
@@ -55,7 +55,7 @@
 | T-23 | Api: DailyConditions / PlannedWorks コントローラ | 2 | T-22 | M |
 | T-24 | Application/Api: HomeService・`/api/home/today` | 2 | T-22 | M |
 | T-25 | Api統合テスト（縦切り2） | 2 | T-23,24 | M |
-| T-26 | Frontend: S-03 日次コンディション | 2 | T-23 | S |
+| T-26 | Frontend: S-03 日次コンディション・S-08 への併記 | 2 | T-23 | S |
 | T-27 | Frontend: S-01 予定機能追加 | 2 | T-24 | M |
 | T-28 | Frontend: S-07 未実行記録 | 2 | T-23 | S |
 | T-29 | Frontend: S-04 に予定連携・未記録警告を追加 | 2 | T-24 | S |
@@ -134,7 +134,6 @@
 | `WorkContext` | 同上。`location_note` は `Other` のときのみ |
 | `PerformanceResult` | 更新可。`RecordedAt` は不変 |
 | `SessionStatus` / `WorkLocation` | 列挙型 |
-| `WorkSessionStarter` | 集約をまたぐ検証 |
 
 **テスト**: T-03〜T-07、T-11、T-12（[技術設計 §6.2](08-technical-design.md)）
 
@@ -144,6 +143,7 @@
 - `Finish` は `PerformanceResult` を引数に取る。Resultなしで終了できるシグネチャにしない（WS-3）
 - 時刻は引数で受け取る（`IClock` から渡す）が、**公開APIとしてクライアントから設定できる経路を作らない**（WS-8）
 - **T-12（PreWorkState に public setter がないことをリフレクションで確認するテスト）をこの時点で書く**
+- 集約をまたぐ検証（進行中の有無・TaskItem/WorkType の妥当性）は Domain に置かない。アプリケーション層の `WorkSessionService` が担う（[ドメイン設計 §6](05-domain-design.md)）。T-07 の範囲である
 
 ---
 
@@ -286,15 +286,19 @@ Testcontainers + WebApplicationFactory。
 
 ### T-21 PlannedWork / NonExecutionRecord
 
-**注意**: 実行と未実行の排他（PW-4/PW-5）。`NonExecutionRecorder` ドメインサービスで担保する。テスト T-09 / T-10。
+**注意**: 実行と未実行の排他（PW-4/PW-5）。`PlannedWorkService`（アプリケーション層）で担保する。Domain にドメインサービスを作らない（[ドメイン設計 §6](05-domain-design.md)）。テスト T-09 / T-10。
 
 ### T-22〜T-25 Application / Api
 
 - `PUT /api/daily-conditions/{date}` は upsert（200 or 201）
 - `PUT /api/planned-works/{id}/skip` も upsert。WorkSession紐づき時は409
 - `GET /api/home/today` は集約エンドポイント。`prompts` をサーバーで判定
+- **`GET /api/work-sessions`（履歴）の日付グループに `dailyCondition` を追加する**（[API設計 §2.18](07-api-design.md)）。縦切り1 では DailyCondition が存在しないため省いてある。未記録の日は `null` を返す
+- **`POST /api/work-sessions/{id}/finish` の `warnings` に `MissingDailyCondition` の判定を追加する**（[API設計 §2.15](07-api-design.md)）。同じ理由で縦切り1 では判定していない
 
 ### T-26〜T-29 Frontend
+
+**T-26 の注意**: S-03 の入力画面に加えて、**S-08 の各日に DailyCondition を併記する**（[UC-08](03-use-cases.md) 手順3）。縦切り1 の S-08 は API が返さないため未対応になっている。
 
 **T-29 の注意**: 作業開始時に当日のDailyConditionが未記録なら警告を出すが、**開始を妨げない**（[UC-04](03-use-cases.md)の例外表）。記録の摩擦を増やすと、記録自体が続かなくなる。
 

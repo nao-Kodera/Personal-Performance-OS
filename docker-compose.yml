@@ -1,0 +1,58 @@
+# Personal Performance OS — 開発環境
+#
+# 設計書: docs/08-technical-design.md §4
+#
+# 注意:
+#   api / web サービスは Dockerfile を必要とする。
+#   Dockerfile は backend が T-01 以降、frontend が T-12 で作成される。
+#   それまでは db のみを起動すること:
+#
+#       docker compose up -d db
+#
+#   TZ: UTC を全サービスに明示している。コンテナのタイムゾーンが JST だと
+#   DateTime.Now を誤って使った箇所がローカルで動いてしまい、JST 変換の
+#   実装漏れが顕在化しない（docs/08-technical-design.md §4）。
+
+services:
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: performance_os
+      POSTGRES_USER: performance_os
+      POSTGRES_PASSWORD: dev_password
+      TZ: UTC
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U performance_os"]
+      interval: 5s
+      retries: 10
+
+  api:
+    build:
+      context: ./backend
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      TZ: UTC
+      ConnectionStrings__Default: >-
+        Host=db;Database=performance_os;Username=performance_os;Password=dev_password
+    ports:
+      - "5080:8080"
+    depends_on:
+      db:
+        condition: service_healthy
+
+  web:
+    build:
+      context: ./frontend
+    environment:
+      VITE_API_BASE_URL: http://localhost:5080
+    ports:
+      - "5173:5173"
+    depends_on:
+      - api
+
+volumes:
+  pgdata:

@@ -2,7 +2,7 @@
 
 - ドキュメントID: DB-006
 - ステータス: ドラフト
-- 最終更新: 2026-08-04
+- 最終更新: 2026-08-05
 - 前提: [05-domain-design.md](05-domain-design.md) / [04-analytics-spec.md](04-analytics-spec.md) / [02-glossary.md](02-glossary.md)
 - DBMS: PostgreSQL 16
 
@@ -520,7 +520,7 @@ CONSTRAINT ck_non_execution_records_reason CHECK (
 |---|---|---|---|
 | WS-3 | Completed なら performance_results が必ず存在 | 別テーブルへの存在制約はCHECKで書けない | アプリ層で同一トランザクション。加えて §7 の整合性検証クエリで定期確認 |
 | WS-4 | Abandoned なら performance_results が存在しない | 同上 | 同上 |
-| PW-4/5 | 予定に対し「実行」と「未実行」が排他 | 別テーブル間の排他 | ドメインサービス + §7 の検証クエリ |
+| PW-4/5 | 予定に対し「実行」と「未実行」が排他 | 別テーブル間の排他 | アプリケーション層（[ドメイン設計 §6.2](05-domain-design.md)） + §7 の検証クエリ |
 | DC-4 | DailyCondition は当日のみ記録可 | 「現在日」に依存する条件はCHECKで書けない（IMMUTABLEでない） | アプリケーション層 |
 | WS-8 | 時刻がシステム時刻であること | DBには判定材料がない | エンティティのAPI設計 |
 

@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.3" />
+
+    <!--
+      設計時ツール（dotnet ef）用。IDesignTimeDbContextFactory を
+      このプロジェクトに置いているため、Api ではなくここに参照する。
+    -->
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.4">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\PerformanceOs.Domain\PerformanceOs.Domain.csproj" />
+    <ProjectReference Include="..\PerformanceOs.Application\PerformanceOs.Application.csproj" />
+  </ItemGroup>
+
+</Project>
