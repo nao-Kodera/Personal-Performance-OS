@@ -279,6 +279,28 @@ describe('StartSessionPage', () => {
   });
 
   /**
+   * UC-04 の事前条件は「TaskItem が 1 件以上存在する」。
+   * 選べるタスクが無いと、7 項目すべてを埋めても開始できない。
+   * フォームだけを出すと、押せない理由も次の操作も分からない行き止まりになる。
+   */
+  it('タスクが無ければ登録画面へ誘導する', async () => {
+    mockApi([
+      getNoContent('/api/work-sessions/active'),
+      get('/api/work-types', workTypes),
+      get('/api/tasks', []),
+    ]);
+
+    renderWithProviders(<StartSessionPage />);
+
+    expect(await screen.findByText(/タスクがありません/)).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'タスクを登録する' })).toHaveAttribute(
+      'href',
+      '/tasks',
+    );
+    expect(screen.queryByRole('button', { name: '開始' })).toBeNull();
+  });
+
+  /**
    * UC-04 の例外。進行中のセッションがあるときは、この画面を使わせない。
    * 同時に 2 件記録すると、どちらの成果か分離できない（WS-9）。
    */

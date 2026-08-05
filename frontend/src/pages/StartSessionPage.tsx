@@ -189,6 +189,23 @@ export function StartSessionPage() {
     );
   }
 
+  // 選べるタスクが無いと、7 項目を埋めても開始できない。フォームを出さず
+  // 事前条件（UC-04）を満たす導線だけを出す。0 件の一覧に次の操作を添えるのは
+  // S-08 と同じ扱いである（docs/03-use-cases.md UC-08 の例外表）。
+  if (tasks.data?.length === 0) {
+    return (
+      <main>
+        <h1>作業を開始</h1>
+        <p className={styles.notice}>
+          タスクがありません。何に取り組むかを先に登録してください。
+        </p>
+        <Link className={styles.primaryLink} to="/tasks">
+          タスクを登録する
+        </Link>
+      </main>
+    );
+  }
+
   return (
     <main>
       <h1>作業を開始</h1>
