@@ -33,6 +33,14 @@ const dayLabelFormatter = new Intl.DateTimeFormat('ja-JP', {
   weekday: 'short',
 });
 
+const fullDayLabelFormatter = new Intl.DateTimeFormat('ja-JP', {
+  timeZone: JST,
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
+  weekday: 'short',
+});
+
 /** 「09:12」。 */
 export function formatJstTime(isoUtc: string): string {
   return timeFormatter.format(new Date(isoUtc));
@@ -78,6 +86,13 @@ export function formatDayLabel(jstDate: string): string {
   const date = new Date(`${jstDate}T12:00:00+09:00`);
 
   return dayLabelFormatter.format(date);
+}
+
+/**
+ * 「2026年8月4日(火)」。ホームの見出しに使う（docs/03-use-cases.md §4）。
+ */
+export function formatFullDayLabel(jstDate: string): string {
+  return fullDayLabelFormatter.format(new Date(`${jstDate}T12:00:00+09:00`));
 }
 
 /** 「93分」「1時間33分」。 */

@@ -4,6 +4,7 @@ import {
   formatDayLabel,
   formatDuration,
   formatElapsed,
+  formatFullDayLabel,
   formatJstDate,
   formatJstDateTime,
   formatJstTime,
@@ -62,6 +63,14 @@ describe('日付ラベル', () => {
     // 素朴に new Date('2026-08-01') とすると UTC 解釈になり、
     // JST 表示では 7月31日 になってしまう。
     expect(formatDayLabel('2026-08-01')).toBe('8月1日(土)');
+  });
+
+  it('年つきの日付ラベルを返す', () => {
+    expect(formatFullDayLabel('2026-08-04')).toBe('2026年8月4日(火)');
+  });
+
+  it('年つきでも UTC 解釈で前日にずれない', () => {
+    expect(formatFullDayLabel('2026-08-01')).toBe('2026年8月1日(土)');
   });
 });
 
