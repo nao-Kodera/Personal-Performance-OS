@@ -7,7 +7,7 @@ import { CountStepper } from '../components/CountStepper';
 import { RatingInput } from '../components/RatingInput';
 import { formatDuration, formatElapsed } from '../lib/datetime';
 import { describeError } from '../lib/errors';
-import { formatDelta, sessionWarningLabels } from '../lib/labels';
+import { formatDelta, sessionWarningLabels, sessionWarningPrompts } from '../lib/labels';
 import styles from './FinishSessionPage.module.css';
 
 /** docs/06-database-design.md §2.8 の note の上限。 */
@@ -178,7 +178,7 @@ export function FinishSessionPage() {
 
       {warnings.map((warning) => (
         <p key={warning} className={styles.warning}>
-          {sessionWarningLabels[warning]}
+          {sessionWarningPrompts[warning]}
           {warning === 'VeryShortSession' && (
             <Link className={styles.warningLink} to="/sessions/active">
               中断終了に切り替える

@@ -241,7 +241,11 @@ describe('FinishSessionPage', () => {
     renderWithProviders(<FinishSessionPage />, ROUTE);
     await screen.findByRole('group', { name: '集中度' });
 
-    expect(screen.getByText(/1分未満です/)).toBeInTheDocument();
+    // 文言は docs/03-use-cases.md UC-05 の例外表のもの。まだ中断終了に
+    // 切り替えられる時点なので、記録後の文言とは時制が違う。
+    expect(
+      screen.getByText(/1分未満です。中断終了として記録しますか\?/),
+    ).toBeInTheDocument();
     expect(screen.getByRole('link', { name: '中断終了に切り替える' })).toBeInTheDocument();
 
     // 警告は保存を妨げない。

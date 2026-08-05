@@ -36,11 +36,27 @@ export const timeBandLabels: Record<TimeBand, string> = {
   Evening: '夜',
 };
 
+/**
+ * サーバーが返す warnings の文言（記録後に表示する）。
+ * docs/07-api-design.md §2.15。
+ */
 export const sessionWarningLabels: Record<SessionWarning, string> = {
   LongSession: '8時間を超えています。記録し忘れの可能性があります。',
   VeryShortSession: '1分未満です。中断終了の方が適切かもしれません。',
   MissingDailyCondition:
     '日次コンディションが未記録です。睡眠に関する分析に反映されません。',
+};
+
+/**
+ * 終了する前（S-06 の入力中）に出す警告の文言。
+ *
+ * サーバーが返す warnings と時制が違う。終了前はまだ中断終了に切り替えられる
+ * ため、docs/03-use-cases.md UC-05 の例外表の文言を使う。記録後に同じ文で
+ * 「記録しますか?」と問うと、もう選べない操作を促すことになる。
+ */
+export const sessionWarningPrompts: Record<SessionWarning, string> = {
+  ...sessionWarningLabels,
+  VeryShortSession: '1分未満です。中断終了として記録しますか?',
 };
 
 // ---------------------------------------------------------------- 評価尺度
