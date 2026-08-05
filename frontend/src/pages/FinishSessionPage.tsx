@@ -82,7 +82,7 @@ export function FinishSessionPage() {
   if (activeSession.isPending) {
     return (
       <main>
-        <p>読み込み中…</p>
+        <p className={styles.loading}>読み込み中…</p>
       </main>
     );
   }

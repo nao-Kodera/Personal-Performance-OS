@@ -61,7 +61,7 @@ export function HomePage() {
         {summary === undefined ? (
           <p className={styles.muted}>今日はまだ記録がありません。</p>
         ) : (
-          <p>
+          <p className={styles.record}>
             完了 {summary.completedCount}件 / 中断終了 {summary.abandonedCount}件 / 合計{' '}
             {formatDuration(summary.totalMinutes)}
           </p>
@@ -75,7 +75,7 @@ export function HomePage() {
             作業を開始
           </button>
         ) : (
-          <Link className={styles.primaryLink} to="/sessions/start">
+          <Link className={styles.startLink} to="/sessions/start">
             作業を開始
           </Link>
         )}

@@ -1,56 +1,28 @@
 .section {
-  margin: var(--space-5) 0;
-  padding: var(--space-4);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius);
-  background: var(--color-surface);
+  composes: section from '../styles/controls.module.css';
 }
 
 .sectionTitle {
-  margin: 0 0 var(--space-3);
-  font-size: 1rem;
+  composes: sectionTitle from '../styles/controls.module.css';
 }
 
 .primary {
-  width: 100%;
-  padding: var(--space-3) var(--space-5);
-  border: 1px solid var(--color-accent);
-  border-radius: var(--radius);
-  background: var(--color-accent);
-  color: #fff;
-  font-size: 1.125rem;
-  font-weight: 600;
-}
-
-.primary:disabled {
-  border-color: var(--color-border);
-  background: var(--color-border);
-  color: var(--color-muted);
+  composes: primary block from '../styles/controls.module.css';
+  margin-top: var(--space-2);
 }
 
 .primaryLink {
-  display: inline-block;
-  padding: var(--space-2) var(--space-5);
-  border: 1px solid var(--color-accent);
-  border-radius: var(--radius);
-  background: var(--color-accent);
-  color: #fff;
-  font-weight: 600;
-  text-decoration: none;
+  composes: primary from '../styles/controls.module.css';
 }
 
 .notice {
-  margin: var(--space-3) 0;
-  padding: var(--space-3);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius);
-  background: var(--color-surface);
+  composes: notice from '../styles/controls.module.css';
 }
 
 .error {
-  margin: var(--space-3) 0;
-  padding: var(--space-3);
-  border: 1px solid var(--color-danger);
-  border-radius: var(--radius);
-  color: var(--color-danger);
+  composes: error from '../styles/controls.module.css';
+}
+
+.loading {
+  composes: loading from '../styles/controls.module.css';
 }

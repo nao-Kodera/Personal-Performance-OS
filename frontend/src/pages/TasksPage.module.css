@@ -5,69 +5,58 @@
   gap: var(--space-3);
 }
 
+.backLink {
+  font-size: var(--text-sm);
+  white-space: nowrap;
+}
+
+/* 登録・編集の欄。面を塗らず、上下の罫線で一覧と分ける。 */
 .form {
-  margin: var(--space-4) 0 var(--space-6);
-  padding: var(--space-4);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius);
-  background: var(--color-surface);
+  margin: 0 0 var(--space-6);
+  padding: var(--space-5) 0;
+  border-top: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--color-border);
 }
 
 .formTitle {
-  margin: 0 0 var(--space-3);
+  composes: sectionTitle from '../styles/controls.module.css';
 }
 
 .field {
-  margin-bottom: var(--space-4);
+  composes: field from '../styles/controls.module.css';
 }
 
 .label {
-  display: block;
-  font-weight: 600;
+  composes: label from '../styles/controls.module.css';
 }
 
-.input,
-.textarea {
-  width: 100%;
-  padding: var(--space-2);
-  margin-top: var(--space-1);
-  font: inherit;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius);
-  background: var(--color-background);
+.input {
+  composes: input from '../styles/controls.module.css';
 }
 
 .textarea {
-  resize: vertical;
-  min-height: 4em;
+  composes: textarea from '../styles/controls.module.css';
 }
 
 .actions {
-  display: flex;
-  gap: var(--space-2);
+  composes: actions from '../styles/controls.module.css';
 }
 
 .primary {
-  padding: var(--space-2) var(--space-5);
-  border: 1px solid var(--color-accent);
-  border-radius: var(--radius);
-  background: var(--color-accent);
-  color: #fff;
-  font-weight: 600;
+  composes: primary from '../styles/controls.module.css';
 }
 
 .secondary {
-  padding: var(--space-2) var(--space-4);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius);
-  background: var(--color-background);
+  composes: secondary from '../styles/controls.module.css';
 }
 
 .filters {
   display: flex;
   align-items: center;
   gap: var(--space-2);
-  margin-bottom: var(--space-3);
+  margin-bottom: var(--space-2);
+  font-size: var(--text-sm);
+  color: var(--color-muted);
 }
 
 .list {
@@ -95,13 +84,16 @@
 
 .itemMeta {
   display: block;
-  font-size: 0.8125rem;
+  margin-top: 2px;
+  font-size: var(--text-xs);
   color: var(--color-muted);
+  font-variant-numeric: tabular-nums;
 }
 
 .itemNote {
   margin: var(--space-1) 0 0;
-  font-size: 0.875rem;
+  color: var(--color-muted);
+  font-size: var(--text-sm);
   white-space: pre-wrap;
 }
 
@@ -111,14 +103,20 @@
   flex-shrink: 0;
 }
 
+.itemActions .secondary {
+  min-height: 32px;
+  padding: var(--space-1) var(--space-3);
+  font-size: var(--text-sm);
+}
+
 .error {
-  margin: var(--space-3) 0;
-  padding: var(--space-3);
-  border: 1px solid var(--color-danger);
-  border-radius: var(--radius);
-  color: var(--color-danger);
+  composes: error from '../styles/controls.module.css';
 }
 
 .empty {
-  color: var(--color-muted);
+  composes: empty from '../styles/controls.module.css';
+}
+
+.loading {
+  composes: loading from '../styles/controls.module.css';
 }

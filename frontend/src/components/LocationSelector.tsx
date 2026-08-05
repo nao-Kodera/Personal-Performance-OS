@@ -49,18 +49,16 @@ export function LocationSelector({
       />
 
       {value === 'Other' && (
-        <div className={styles.note}>
-          <label>
-            場所の補足
-            <input
-              type="text"
-              className={styles.noteInput}
-              value={locationNote}
-              maxLength={MAX_NOTE_LENGTH}
-              onChange={(event) => onLocationNoteChange(event.target.value)}
-            />
-          </label>
-        </div>
+        <label className={styles.note}>
+          <span className={styles.noteLabel}>場所の補足</span>
+          <input
+            type="text"
+            className={styles.noteInput}
+            value={locationNote}
+            maxLength={MAX_NOTE_LENGTH}
+            onChange={(event) => onLocationNoteChange(event.target.value)}
+          />
+        </label>
       )}
     </div>
   );

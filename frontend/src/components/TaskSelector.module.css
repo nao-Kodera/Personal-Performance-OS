@@ -1,28 +1,22 @@
 .field {
-  margin: 0 0 var(--space-4);
+  margin: 0 0 var(--space-5);
 }
 
 .label {
-  display: block;
-  font-weight: 600;
+  composes: label from '../styles/controls.module.css';
 }
 
 .search {
-  width: 100%;
-  padding: var(--space-2);
-  margin-top: var(--space-1);
-  font: inherit;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius);
+  composes: input from '../styles/controls.module.css';
 }
 
 .list {
   list-style: none;
   margin: var(--space-2) 0 0;
   padding: 0;
-  max-height: 240px;
+  max-height: 260px;
   overflow-y: auto;
-  border: 1px solid var(--color-border);
+  border: 1px solid var(--color-border-strong);
   border-radius: var(--radius);
 }
 
@@ -37,12 +31,21 @@
 
 .body {
   display: block;
-  padding: var(--space-2) var(--space-3);
+  padding: var(--space-3) var(--space-3) var(--space-3) var(--space-4);
+  /* 選択時に現れる目印の幅を先に確保して、文字が横に動かないようにする。 */
+  border-left: 3px solid transparent;
+  transition:
+    background-color var(--transition),
+    border-color var(--transition);
+}
+
+.option input:not(:checked) + .body:hover {
+  background: var(--color-surface);
 }
 
 .option input:checked + .body {
-  background: var(--color-surface);
-  border-left: 3px solid var(--color-accent);
+  border-left-color: var(--color-accent);
+  background: var(--color-accent-soft);
   font-weight: 600;
 }
 
@@ -53,9 +56,11 @@
 
 .meta {
   display: block;
-  font-size: 0.75rem;
+  margin-top: 2px;
+  font-size: var(--text-xs);
   font-weight: 400;
   color: var(--color-muted);
+  font-variant-numeric: tabular-nums;
 }
 
 .empty {

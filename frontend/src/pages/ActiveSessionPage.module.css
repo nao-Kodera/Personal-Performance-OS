@@ -3,15 +3,22 @@
 }
 
 .meta {
+  composes: meta from '../styles/controls.module.css';
   margin: var(--space-1) 0 0;
-  color: var(--color-muted);
 }
 
+/* 経過時間はこの画面の主役。計器の窓のように罫線で挟んで置く。 */
 .elapsed {
   margin: var(--space-6) 0;
-  font-size: 3.5rem;
-  font-weight: 600;
+  padding: var(--space-5) 0;
+  border-top: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--color-border);
+  font-family: var(--font-data);
+  font-size: clamp(2.75rem, 15vw, 4rem);
+  font-weight: 500;
   font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+  line-height: 1;
   text-align: center;
 }
 
@@ -21,89 +28,64 @@
   justify-content: center;
   gap: var(--space-3);
   margin-bottom: var(--space-6);
+  font-variant-numeric: tabular-nums;
 }
 
 .actions {
-  display: flex;
-  gap: var(--space-3);
+  composes: actions from '../styles/controls.module.css';
 }
 
 .primary {
+  composes: primary from '../styles/controls.module.css';
   flex: 1;
   padding: var(--space-3) var(--space-5);
-  border: 1px solid var(--color-accent);
-  border-radius: var(--radius);
-  background: var(--color-accent);
-  color: #fff;
-  font-size: 1.125rem;
-  font-weight: 600;
+  font-size: var(--text-lg);
 }
 
 .secondary {
-  padding: var(--space-2) var(--space-4);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius);
-  background: var(--color-background);
+  composes: secondary from '../styles/controls.module.css';
 }
 
 .danger {
-  padding: var(--space-2) var(--space-5);
-  border: 1px solid var(--color-danger);
-  border-radius: var(--radius);
-  background: var(--color-background);
-  color: var(--color-danger);
-  font-weight: 600;
+  composes: danger from '../styles/controls.module.css';
 }
 
 .primaryLink {
-  display: inline-block;
-  padding: var(--space-2) var(--space-5);
-  border: 1px solid var(--color-accent);
-  border-radius: var(--radius);
-  background: var(--color-accent);
-  color: #fff;
-  font-weight: 600;
-  text-decoration: none;
+  composes: primary from '../styles/controls.module.css';
 }
 
+/* 中断終了の確認。取り消せない操作なので、赤い縦罫で他と区別する。 */
 .confirm {
+  margin-bottom: var(--space-4);
   padding: var(--space-4);
-  border: 1px solid var(--color-danger);
-  border-radius: var(--radius);
+  border-left: 2px solid var(--color-danger);
+  background: var(--color-danger-soft);
+}
+
+.confirm > p:first-child {
+  margin-top: 0;
+  color: var(--color-danger);
+  font-weight: 600;
 }
 
 .label {
-  display: block;
-  margin: var(--space-3) 0;
-  font-weight: 600;
+  composes: label from '../styles/controls.module.css';
+  margin: var(--space-3) 0 var(--space-1);
 }
 
 .textarea {
-  display: block;
-  width: 100%;
-  min-height: 4em;
-  padding: var(--space-2);
-  margin-top: var(--space-1);
-  font: inherit;
-  font-weight: 400;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius);
-  background: var(--color-background);
-  resize: vertical;
+  composes: textarea from '../styles/controls.module.css';
+  margin-bottom: var(--space-3);
 }
 
 .notice {
-  margin: var(--space-3) 0;
-  padding: var(--space-3);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius);
-  background: var(--color-surface);
+  composes: notice from '../styles/controls.module.css';
 }
 
 .error {
-  margin: var(--space-3) 0;
-  padding: var(--space-3);
-  border: 1px solid var(--color-danger);
-  border-radius: var(--radius);
-  color: var(--color-danger);
+  composes: error from '../styles/controls.module.css';
+}
+
+.loading {
+  composes: loading from '../styles/controls.module.css';
 }

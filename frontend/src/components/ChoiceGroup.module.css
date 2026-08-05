@@ -1,11 +1,13 @@
 .group {
-  margin: 0 0 var(--space-4);
+  margin: 0 0 var(--space-5);
   padding: 0;
   border: 0;
 }
 
 .legend {
   padding: 0;
+  margin-bottom: var(--space-2);
+  font-size: var(--text-sm);
   font-weight: 600;
 }
 
@@ -16,14 +18,26 @@
 }
 
 .button {
-  display: block;
+  display: flex;
+  align-items: center;
+  min-height: 40px;
   padding: var(--space-2) var(--space-4);
-  border: 1px solid var(--color-border);
+  border: 1px solid var(--color-border-strong);
   border-radius: var(--radius);
   background: var(--color-background);
+  color: var(--color-muted);
   cursor: pointer;
   user-select: none;
   white-space: nowrap;
+  transition:
+    background-color var(--transition),
+    border-color var(--transition),
+    color var(--transition);
+}
+
+.option input:not(:checked) + .button:hover {
+  border-color: var(--color-text);
+  color: var(--color-text);
 }
 
 .option input:checked + .button {
@@ -38,16 +52,22 @@
   outline-offset: 2px;
 }
 
+/* 「その他」を選んだときだけ現れる補足欄。選択肢の直下に置きたいので、
+   ChoiceGroup 側の下余白を打ち消して詰める。 */
 .note {
-  margin-top: var(--space-2);
+  display: block;
+  margin: calc(var(--space-2) - var(--space-5)) 0 var(--space-5);
+}
+
+.noteLabel {
+  display: block;
+  margin-bottom: var(--space-1);
+  font-size: var(--text-sm);
+  font-weight: 600;
 }
 
 .noteInput {
-  width: 100%;
-  padding: var(--space-2);
-  font: inherit;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius);
+  composes: input from '../styles/controls.module.css';
 }
 
 .empty {

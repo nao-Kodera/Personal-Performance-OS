@@ -41,7 +41,7 @@ export function HistoryPage() {
   if (history.isPending) {
     return (
       <main>
-        <p>読み込み中…</p>
+        <p className={styles.loading}>読み込み中…</p>
       </main>
     );
   }
@@ -61,7 +61,7 @@ export function HistoryPage() {
   if (days.length === 0) {
     return (
       <main>
-        <h1>履歴</h1>
+        <PageHeader />
         <p className={styles.notice}>まだ記録がありません。</p>
         <Link className={styles.primaryLink} to="/sessions/start">
           作業を開始する
@@ -72,7 +72,7 @@ export function HistoryPage() {
 
   return (
     <main>
-      <h1>履歴</h1>
+      <PageHeader />
 
       {days.map((day) => (
         <section key={day.date} className={styles.day}>
@@ -96,6 +96,22 @@ export function HistoryPage() {
   );
 }
 
+/**
+ * 見出しとホームへの復帰導線。
+ *
+ * 画面遷移は S-01 を起点に戻る（docs/03-use-cases.md §2.1）。
+ */
+function PageHeader() {
+  return (
+    <div className={styles.pageHeader}>
+      <h1>履歴</h1>
+      <Link className={styles.backLink} to="/">
+        ホームへ
+      </Link>
+    </div>
+  );
+}
+
 function SessionRow({ session }: { session: WorkSessionResponse }) {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -113,28 +129,75 @@ function SessionRow({ session }: { session: WorkSessionResponse }) {
         onClick={() => setIsOpen((open) => !open)}
       >
         <span className={styles.rowHead}>
-          {period}
-          {session.durationMinutes !== null && `（${formatDuration(session.durationMinutes)}）`}{' '}
-          {session.workTypeName} {session.taskTitle}
-          {session.status !== 'Completed' && (
-            <span className={styles.status}>[{sessionStatusLabels[session.status]}]</span>
-          )}
+          <span className={styles.headMeta}>
+            <span className={styles.period}>{period}</span>
+            {session.durationMinutes !== null && (
+              <span className={styles.duration}>
+                （{formatDuration(session.durationMinutes)}）
+              </span>
+            )}{' '}
+            <span className={styles.workType}>{session.workTypeName}</span>
+          </span>{' '}
+          <span className={styles.headTitle}>
+            {session.taskTitle}
+            {session.status !== 'Completed' && (
+              <span className={styles.status}>
+                [{sessionStatusLabels[session.status]}]
+              </span>
+            )}
+          </span>
         </span>
 
         {session.result && (
           <span className={styles.rowResult}>
-            集中{session.result.focusLevel} 成果{session.result.outputLevel} 正確
-            {session.result.accuracyLevel} 満足{session.result.satisfactionLevel}
-            {session.fatigueDelta !== null &&
-              ` 疲労 ${session.preWorkState.fatigueLevel}→${session.result.fatigueAfter}（${formatDelta(session.fatigueDelta)}）`}
-            {` 中断${session.interruptionCount}回`}
-            {` @${workLocationLabels[session.workContext.workLocation]}`}
+            <Reading label="集中" value={session.result.focusLevel} />{' '}
+            <Reading label="成果" value={session.result.outputLevel} />{' '}
+            <Reading label="正確" value={session.result.accuracyLevel} />{' '}
+            <Reading label="満足" value={session.result.satisfactionLevel} />
+            {session.fatigueDelta !== null && (
+              <>
+                {' '}
+                <Reading
+                  label="疲労 "
+                  value={`${session.preWorkState.fatigueLevel}→${session.result.fatigueAfter}（${formatDelta(session.fatigueDelta)}）`}
+                />
+              </>
+            )}{' '}
+            <Reading label="中断" value={session.interruptionCount} unit="回" />{' '}
+            <Reading
+              label="@"
+              value={workLocationLabels[session.workContext.workLocation]}
+            />
           </span>
         )}
       </button>
 
       {isOpen && <SessionDetail session={session} />}
     </>
+  );
+}
+
+/**
+ * 一覧行に並ぶ読み取り値の 1 つ（「集中4」など）。
+ *
+ * 項目名と値を分けるのは表示のためだけであり、示す内容は変えない。
+ * <b>ここで指標を合成した値を作らないこと</b>（技術設計 §8 の禁止事項 5）。
+ */
+function Reading({
+  label,
+  value,
+  unit,
+}: {
+  label: string;
+  value: React.ReactNode;
+  unit?: string;
+}) {
+  return (
+    <span className={styles.reading}>
+      <span className={styles.readingKey}>{label}</span>
+      <span className={styles.readingValue}>{value}</span>
+      {unit !== undefined && <span className={styles.readingUnit}>{unit}</span>}
+    </span>
   );
 }
 

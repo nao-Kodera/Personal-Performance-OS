@@ -1,38 +1,66 @@
+/*
+  1〜5 の評価を、目盛りの付いた 1 本の帯として見せる。
+
+  ばらばらのボタンではなく連続した目盛りにするのは、記録するものが
+  順序のある尺度だからである。両端のラベルと合わせて、尺度の向きが
+  見た目から分かるようにする（docs/02-glossary.md §2.2）。
+
+  区画は 1 タップで選べる radio のままである（docs/03-use-cases.md §6）。
+*/
+
 .group {
-  margin: 0 0 var(--space-4);
+  margin: 0 0 var(--space-5);
   padding: 0;
   border: 0;
 }
 
 .legend {
   padding: 0;
+  margin-bottom: var(--space-2);
+  font-size: var(--text-sm);
   font-weight: 600;
 }
 
 .options {
   display: flex;
-  gap: var(--space-2);
+  overflow: hidden;
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius);
+  background: var(--color-background);
 }
 
 .option {
+  display: flex;
   flex: 1;
 }
 
+/* 目盛りの区切り。 */
+.option + .option {
+  border-left: 1px solid var(--color-border);
+}
+
 .button {
-  display: block;
-  padding: var(--space-3) 0;
-  text-align: center;
-  font-size: 1.125rem;
-  font-variant-numeric: tabular-nums;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius);
-  background: var(--color-background);
+  display: flex;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  font-family: var(--font-data);
+  font-size: var(--text-lg);
+  color: var(--color-muted);
   cursor: pointer;
   user-select: none;
+  transition:
+    background-color var(--transition),
+    color var(--transition);
+}
+
+.option input:not(:checked) + .button:hover {
+  background: var(--color-accent-soft);
+  color: var(--color-text);
 }
 
 .option input:checked + .button {
-  border-color: var(--color-accent);
   background: var(--color-accent);
   color: #fff;
   font-weight: 700;
@@ -40,7 +68,7 @@
 
 .option input:focus-visible + .button {
   outline: 2px solid var(--color-accent);
-  outline-offset: 2px;
+  outline-offset: -3px;
 }
 
 /* 両端の意味を常に表示する。尺度の向きが指標によって異なるため
@@ -48,17 +76,20 @@
 .ends {
   display: flex;
   justify-content: space-between;
-  margin-top: var(--space-1);
-  font-size: 0.75rem;
-  color: var(--color-muted);
+  margin-top: var(--space-2);
+  font-size: var(--text-xs);
+  color: var(--color-faint);
 }
 
+/* 読み取り値。未選択との差が一目で分かるようにする。 */
 .selected {
   margin: var(--space-1) 0 0;
-  font-size: 0.875rem;
+  font-size: var(--text-sm);
+  font-weight: 600;
   min-height: 1.4em;
 }
 
 .unselected {
-  color: var(--color-muted);
+  color: var(--color-faint);
+  font-weight: 400;
 }

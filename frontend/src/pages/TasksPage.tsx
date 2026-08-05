@@ -1,4 +1,5 @@
 import { useId, useState } from 'react';
+import { Link } from 'react-router';
 
 import {
   useArchiveTask,
@@ -103,8 +104,12 @@ export function TasksPage() {
 
   return (
     <main>
+      {/* 画面遷移は S-01 を起点に戻る（docs/03-use-cases.md §2.1）。 */}
       <div className={styles.header}>
         <h1>タスク</h1>
+        <Link className={styles.backLink} to="/">
+          ホームへ
+        </Link>
       </div>
 
       <form className={styles.form} onSubmit={handleSubmit}>
@@ -181,7 +186,7 @@ export function TasksPage() {
         <label htmlFor={archivedToggleId}>アーカイブ済みも表示する</label>
       </div>
 
-      {tasks.isPending && <p>読み込み中…</p>}
+      {tasks.isPending && <p className={styles.loading}>読み込み中…</p>}
 
       {tasks.error && (
         <p className={styles.error} role="alert">
