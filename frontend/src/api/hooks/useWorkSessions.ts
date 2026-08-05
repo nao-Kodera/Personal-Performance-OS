@@ -6,6 +6,8 @@ import type {
   AbandonWorkSessionRequest,
   SaveResultRequest,
   StartWorkSessionRequest,
+  WorkSessionDayResponse,
+  WorkSessionHistoryQuery,
   WorkSessionResponse,
 } from '../types';
 
@@ -52,6 +54,42 @@ export function useStartWorkSession() {
 
       // タスク一覧の最終利用時刻とセッション数が変わる。
       void queryClient.invalidateQueries({ queryKey: ['tasks'] });
+    },
+  });
+}
+
+/**
+ * 履歴（UC-08）。JST の日付でグループ化され、日付・セッションとも新しい順で返る。
+ *
+ * 既定は直近 28 日（当日を含む）。深夜をまたぐセッションは開始日側に入る
+ * （docs/02-glossary.md §4）。
+ */
+export function useSessionHistory(query: WorkSessionHistoryQuery = {}) {
+  return useQuery({
+    queryKey: queryKeys.sessionHistory(query),
+    queryFn: ({ signal }) =>
+      apiClient.get<WorkSessionDayResponse[]>('/api/work-sessions', query, signal),
+  });
+}
+
+/**
+ * 成果評価を訂正する（UC-08）。
+ *
+ * <b>訂正できるのは 5 指標・メモ・中断回数だけである。</b>開始/終了時刻、
+ * PreWorkState、WorkContext は変更できない。結果を知った後に作業前の状態を
+ * 書き換えられると、説明変数と目的変数の独立性が失われ、分析が意味を持たなく
+ * なる（docs/03-use-cases.md UC-08・技術設計 §8 の禁止事項 1）。
+ *
+ * recordedAt は変更されない。updatedAt との差で事後編集を識別する（PR-2）。
+ */
+export function useUpdateResult() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ id, ...request }: SaveResultRequest & { id: number }) =>
+      apiClient.put<WorkSessionResponse>(`/api/work-sessions/${id}/result`, request),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ['work-sessions'] });
     },
   });
 }

@@ -60,3 +60,8 @@ export function post(pathFragment: string, status: number, body?: unknown): Hand
   return ({ method, url }) =>
     method === 'POST' && url.includes(pathFragment) ? { status, body } : undefined;
 }
+
+export function put(pathFragment: string, status: number, body?: unknown): Handler {
+  return ({ method, url }) =>
+    method === 'PUT' && url.includes(pathFragment) ? { status, body } : undefined;
+}

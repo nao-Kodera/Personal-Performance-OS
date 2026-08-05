@@ -5,6 +5,7 @@ import { createQueryClient } from './api/queryClient';
 import { ActiveSessionPage } from './pages/ActiveSessionPage';
 import { FinishSessionPage } from './pages/FinishSessionPage';
 import { FoundationPage } from './pages/FoundationPage';
+import { HistoryPage } from './pages/HistoryPage';
 import { StartSessionPage } from './pages/StartSessionPage';
 import { TasksPage } from './pages/TasksPage';
 
@@ -29,6 +30,8 @@ export default function App() {
           <Route path="/sessions/active" element={<ActiveSessionPage />} />
           {/* S-06 */}
           <Route path="/sessions/:id/finish" element={<FinishSessionPage />} />
+          {/* S-08 */}
+          <Route path="/history" element={<HistoryPage />} />
         </Routes>
       </BrowserRouter>
     </QueryClientProvider>
