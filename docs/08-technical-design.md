@@ -2,7 +2,7 @@
 
 - ドキュメントID: TECH-008
 - ステータス: ドラフト
-- 最終更新: 2026-08-04
+- 最終更新: 2026-08-05
 - 前提: [05-domain-design.md](05-domain-design.md) / [06-database-design.md](06-database-design.md) / [07-api-design.md](07-api-design.md)
 
 ---
@@ -45,7 +45,7 @@ MVPの目的は観測と分析の成立であり、アーキテクチャの完�
 
 | 項目 | 選定 | 備考 |
 |---|---|---|
-| 言語 | TypeScript 5.x | `strict: true` |
+| 言語 | TypeScript 6.x | `strict: true` + `noUncheckedIndexedAccess: true` |
 | ライブラリ | React 19 | |
 | ビルド | Vite | |
 | ルーティング | React Router | |
@@ -147,9 +147,6 @@ PerformanceOs.Domain/
 │   ├── Rating.cs
 │   ├── SleepDuration.cs
 │   └── SessionPeriod.cs
-├── Services/
-│   ├── WorkSessionStarter.cs
-│   └── NonExecutionRecorder.cs
 ├── Repositories/                    インターフェースのみ
 │   ├── IWorkTypeRepository.cs
 │   ├── ITaskItemRepository.cs
@@ -401,13 +398,16 @@ CHECK制約は、アプリケーション層とドメイン層の検証をすり
 ### 3.9 未知のプロパティを400にする設定
 
 ```csharp
-builder.Services.ConfigureHttpJsonOptions(o =>
-{
-    o.SerializerOptions.UnmappedMemberHandling = JsonUnmappedMemberHandling.Disallow;
-});
+builder.Services.AddControllers()
+    .AddJsonOptions(o =>
+    {
+        o.JsonSerializerOptions.UnmappedMemberHandling = JsonUnmappedMemberHandling.Disallow;
+    });
 ```
 
 [API設計 §3](07-api-design.md) の方針。変更不可の項目（`startedAt` など）を送ったとき、静かに無視されず400になる。
+
+**`ConfigureHttpJsonOptions` を使わないこと。** これは Minimal API 用であり、Controller のモデルバインディングには適用されない（§3.2 の通り本プロジェクトは Controller を使う）。設定したつもりで未知のプロパティが素通りする。
 
 ### 3.10 フロントエンドの構成
 

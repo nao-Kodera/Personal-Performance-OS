@@ -2,7 +2,7 @@
 
 - ドキュメントID: DOMAIN-005
 - ステータス: ドラフト
-- 最終更新: 2026-08-04
+- 最終更新: 2026-08-05
 - 前提: [02-glossary.md](02-glossary.md) / [03-use-cases.md](03-use-cases.md) / [04-analytics-spec.md](04-analytics-spec.md)
 
 ---
@@ -597,14 +597,16 @@ TimeBand と SleepBand は**保存しない**。StartedAt / SleepMinutes から�
 
 ---
 
-## 6. ドメインサービス
+## 6. 集約をまたぐ処理
 
-集約をまたぐ処理を担う。
+集約単体で担保できない不変条件は、**アプリケーション層のサービスに置く**。ドメインサービスとして Domain 層に置かない。
 
-### 6.1 WorkSessionStarter
+**理由**: これらの検査は「存在しない」「既に使われている」を判定して失敗させる処理であり、`NotFoundException` / `ConflictException`（Application層）を投げる必要がある。Domain は何にも依存しないため（[技術設計 §2.1](08-technical-design.md)）、Domain から Application の例外型は参照できない。Domain 側に別の例外階層を作ると、同じ意味の失敗が2種類の型で表現され、[例外 → HTTPステータスの変換](08-technical-design.md)が二重になる。
+
+### 6.1 作業開始の検査（`WorkSessionService.StartAsync`）
 
 ```text
-Start(taskItemId, workTypeId, plannedWorkId?, preWorkStateData, workContextData)
+StartAsync(taskItemId, workTypeId, plannedWorkId?, preWorkStateData, workContextData)
 ```
 
 **責務**
@@ -615,12 +617,18 @@ Start(taskItemId, workTypeId, plannedWorkId?, preWorkStateData, workContextData)
 4. plannedWorkId が指定された場合、その PlannedWork が存在し、まだ実行されておらず、NonExecutionRecord も持たないことの検査（PW-5）
 5. WorkSession の生成
 
-**集約単体で担保できない不変条件をここに集約する。** エンティティのコンストラクタでは検査できないものだけを置く。
+**検査の順序は上記のとおりとする。** 1 を最初に置く。進行中のセッションがあるときは、他の入力が妥当かどうかに関わらず開始できないため。
 
-### 6.2 NonExecutionRecorder
+**アプリケーション層の検査だけで同時実行を担保しない。** 1 の検査と挿入の間に別の要求が入りうる。最終的な担保は DB の部分一意インデックス `uq_work_sessions_single_active` である（[技術設計 §3.6](08-technical-design.md)）。
+
+### 6.1.1 WorkSession の生成そのものは集約が担う
+
+`WorkSession.Start` が PreWorkState / WorkContext を同一の時刻で生成する（PS-3）。上記の検査を通過した後に呼ぶ。**エンティティのコンストラクタで検査できる不変条件を、アプリケーション層に持ち出さないこと。**
+
+### 6.2 未実行記録の検査（`PlannedWorkService.RecordNonExecutionAsync`）
 
 ```text
-Record(plannedWorkId, reason, note)
+RecordNonExecutionAsync(plannedWorkId, reason, note)
 ```
 
 **責務**
@@ -628,6 +636,8 @@ Record(plannedWorkId, reason, note)
 1. PlannedWork が存在することの検査
 2. その PlannedWork に紐づく WorkSession が存在しないことの検査（PW-4）
 3. NonExecutionRecord の生成または更新
+
+配置の理由は §6 と同じ。**未実装（T-21 / T-22）。**
 
 ---
 
@@ -678,11 +688,11 @@ IWorkSessionRepository
 | WT-2 | WorkType名の一意性 | DB一意制約 + アプリ層で事前確認 |
 | DC-1 | DailyCondition 1日1件 | DB一意制約 |
 | DC-4 | 当日のみ | アプリケーション層 |
-| PW-4/5 | 予定の排他（実行 or 未実行） | ドメインサービス + DB部分一意制約 |
+| PW-4/5 | 予定の排他（実行 or 未実行） | アプリケーション層（§6.2） + DB部分一意制約 |
 | WS-2〜4 | 状態とResultの整合 | エンティティ内部 + DB CHECK制約 |
 | WS-5 | FinishedAt > StartedAt | エンティティ内部 + DB CHECK制約 |
 | WS-8 | 時刻の外部設定禁止 | エンティティのシグネチャ（時刻を引数に取らない公開API） |
-| WS-9 | InProgress は1件 | ドメインサービス + DB部分一意インデックス |
+| WS-9 | InProgress は1件 | アプリケーション層（§6.1） + DB部分一意インデックス |
 | PS-2 | PreWorkState 不変 | エンティティにsetterなし + 更新APIなし |
 | WC-3 | WorkContext 不変 | 同上 |
 | Rating | 1〜5 | 値オブジェクト + DB CHECK制約 |

@@ -2,7 +2,7 @@
 
 - ドキュメントID: API-007
 - ステータス: ドラフト
-- 最終更新: 2026-08-04
+- 最終更新: 2026-08-05
 - 前提: [05-domain-design.md](05-domain-design.md) / [06-database-design.md](06-database-design.md) / [03-use-cases.md](03-use-cases.md)
 
 ---
@@ -113,6 +113,7 @@ sleepBand     "Under6" | "From6To7" | "From7To8" | "Over8"
 | `DELETE /api/tasks/{id}` | アーカイブで代替 |
 | `DELETE /api/work-types/{id}` | 無効化で代替 |
 | `POST /api/work-sessions`（時刻指定での作成） | 後から記録を作れない（WS-8） |
+| `GET /api/work-sessions/{id}` | 進行中は `/active`、過去は一覧から得られる。単体で引く用途がない |
 | `PUT /api/daily-conditions`（過去日） | 当日のみ（DC-4）。パスの日付が当日でなければ422 |
 
 **PreWorkStateの更新APIを用意しないことは、本プロダクトの根幹に関わる設計判断である。** 実装中に「編集できた方が便利」という理由で追加しないこと。理由は[ドメイン設計 §4.7](05-domain-design.md)を参照。
@@ -255,7 +256,21 @@ WorkTypeを7個以上に増やすと、分析のサンプル数が不足する�
 | defaultWorkTypeId | 必須・存在する有効なWorkType |
 | note | 任意・2000文字以内 |
 
-**レスポンス 201** — 作成された TaskItem
+**レスポンス 201**
+
+```json
+{
+  "id": 12,
+  "title": "認証方式の検討",
+  "defaultWorkTypeId": 2,
+  "note": null,
+  "isArchived": false,
+  "createdAt": "2026-08-04T00:00:00Z",
+  "updatedAt": "2026-08-04T00:00:00Z"
+}
+```
+
+**一覧（§2.4）と形が違う。** 集計値（`lastUsedAt` / `sessionCount`）と `defaultWorkTypeName` を含まない。集計値は射影クエリでしか得られず、更新のたびに追加の問い合わせが必要になる。作業タイプ名は、クライアントが選択肢として保持している一覧から ID で解決できる。
 
 **エラー**
 
@@ -274,7 +289,7 @@ WorkTypeを7個以上に増やすと、分析のサンプル数が不足する�
 
 **リクエスト** — POST と同じ形
 
-**レスポンス 200** — 更新後の TaskItem
+**レスポンス 200** — POST と同じ形
 
 **エラー**
 
@@ -289,7 +304,7 @@ WorkTypeを7個以上に増やすと、分析のサンプル数が不足する�
 
 **リクエスト** — ボディなし
 
-**レスポンス 200** — 更新後の TaskItem
+**レスポンス 200** — §2.5 と同じ形
 
 **エラー**
 
@@ -547,8 +562,12 @@ WorkTypeを7個以上に増やすと、分析のサンプル数が不足する�
   "workTypeName": "設計",
   "plannedWorkId": 88,
   "startedAt": "2026-08-04T00:12:00Z",
+  "finishedAt": null,
   "status": "InProgress",
+  "durationMinutes": null,
   "interruptionCount": 0,
+  "abandonNote": null,
+  "timeBand": "Morning",
   "preWorkState": {
     "fatigueLevel": 2,
     "expectedFocusLevel": 4,
@@ -559,10 +578,17 @@ WorkTypeを7個以上に増やすと、分析のサンプル数が不足する�
     "workLocation": "Home",
     "locationNote": null,
     "meetingCount": 1,
-    "interruptionExpected": false
-  }
+    "interruptionExpected": false,
+    "recordedAt": "2026-08-04T00:12:00Z"
+  },
+  "result": null,
+  "fatigueDelta": null,
+  "focusGap": null,
+  "warnings": []
 }
 ```
+
+**これが WorkSession を返すすべてのエンドポイント（§2.14〜§2.17）の共通形である。** 未終了・未評価の項目は省略せず `null` を返す。クライアントが項目の有無で分岐せずに済むため。
 
 **レスポンス 204** — 進行中のセッションが存在しない
 
@@ -685,7 +711,7 @@ WorkTypeを7個以上に増やすと、分析のサンプル数が不足する�
 6. 更新後のセッションを返す
 ```
 
-**レスポンス 200**
+**レスポンス 200** — `/api/work-sessions/active`（§2.13）と同じ形に `finishedAt` / `durationMinutes` / `result` / `fatigueDelta` / `focusGap` / `warnings` が入る。**以下は差分の抜粋であり、`taskTitle` / `workTypeName` / `timeBand` / `preWorkState` / `workContext` も同様に含まれる。**
 
 ```json
 {
@@ -767,7 +793,7 @@ WorkTypeを7個以上に増やすと、分析のサンプル数が不足する�
    PerformanceResult は作成しない
 ```
 
-**レスポンス 200**
+**レスポンス 200** — §2.13 と同じ形。以下は差分の抜粋。
 
 ```json
 {
