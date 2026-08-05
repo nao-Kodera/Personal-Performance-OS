@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using PerformanceOs.Domain.DailyConditions;
+using PerformanceOs.Domain.PlannedWorks;
 using PerformanceOs.Domain.TaskItems;
 using PerformanceOs.Domain.ValueObjects;
 using PerformanceOs.Domain.WorkSessions;
@@ -30,6 +31,11 @@ public sealed class PerformanceOsDbContext : DbContext
     /// 暗黙に結合する（docs/06-database-design.md §1）。
     /// </summary>
     public DbSet<DailyCondition> DailyConditions => Set<DailyCondition>();
+
+    /// <summary>
+    /// 作業予定。NonExecutionRecord は集約内のため DbSet を公開しない。
+    /// </summary>
+    public DbSet<PlannedWork> PlannedWorks => Set<PlannedWork>();
 
     protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
     {

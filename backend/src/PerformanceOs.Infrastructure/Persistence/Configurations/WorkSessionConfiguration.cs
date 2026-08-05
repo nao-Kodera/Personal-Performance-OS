@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using PerformanceOs.Domain.PlannedWorks;
 using PerformanceOs.Domain.TaskItems;
 using PerformanceOs.Domain.WorkSessions;
 using PerformanceOs.Domain.WorkTypes;
@@ -85,8 +86,13 @@ public sealed class WorkSessionConfiguration : IEntityTypeConfiguration<WorkSess
             .OnDelete(DeleteBehavior.Restrict)
             .HasConstraintName("fk_work_sessions_work_type");
 
-        // planned_work_id への外部キーは T-21 で planned_works を作成したときに追加する。
-        // 現時点では参照先テーブルが存在しない。
+        // 予定から開始したセッションのみ値を持つ。予定を消してセッションだけを
+        // 残せないよう Restrict にする。
+        builder.HasOne<PlannedWork>()
+            .WithMany()
+            .HasForeignKey(x => x.PlannedWorkId)
+            .OnDelete(DeleteBehavior.Restrict)
+            .HasConstraintName("fk_work_sessions_planned_work");
 
         // 1 つの予定に紐づくセッションは最大 1 件。NULL は重複を許すため、
         // 予定外のセッションは何件でも作成できる。

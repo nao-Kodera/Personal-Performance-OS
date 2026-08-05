@@ -30,6 +30,7 @@ public static class DependencyInjection
         services.AddScoped<ITaskItemRepository, TaskItemRepository>();
         services.AddScoped<IWorkSessionRepository, WorkSessionRepository>();
         services.AddScoped<IDailyConditionRepository, DailyConditionRepository>();
+        services.AddScoped<IPlannedWorkRepository, PlannedWorkRepository>();
 
         // 読み取りモデル。集約を経由しない射影の実装。
         services.AddScoped<ITaskItemQuery, TaskItemQuery>();
